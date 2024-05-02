@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-test-deployment
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: argocd-test-deployment
+  template:
+    metadata:
+      labels:
+        app: argocd-test-deployment
+    spec:
+      containers:
+      - name: argocd-test-alpine
+        image: alpine:latest
+        command: ["tail", "-f", "/dev/null"]
+        ports:
+        - containerPort: 8080

@@ -92,4 +92,42 @@ bin    dev    etc    home   lib    media  mnt    opt    proc   root   run    sbi
 / # exit
 ```
 
+- *reinstall application*
 
+## namespace of Deployment in Application changes
+
+- delete application through web-interface (here all things are deleted)
+- reinstall application
+- change namespace in `application.yml` `spec.destination.namespace` from `default` to `test-namespace`
+- apply changes via `kubectl apply -f application.yml`
+
+- application shows out of Sync
+- both in `default` namespace and `test-namespace` all pods are still working
+
+```
+helm-test on  main [!] 
+❯ kubectl apply -f application.yml
+application.argoproj.io/argo-test-application configured
+
+helm-test on  main [!] 
+❯ kubectl get pods
+NAME                                      READY   STATUS    RESTARTS   AGE
+argocd-test-deployment-7d9599d8bb-rlhzj   1/1     Running   0          60s
+
+helm-test on  main [!] 
+❯ kubectl -n test-namespace get pods
+NAME                                      READY   STATUS    RESTARTS   AGE
+argocd-test-deployment-7d9599d8bb-nncmw   1/1     Running   0          82s
+
+helm-test on  main [!] 
+❯ kubectl exec argocd-test-deployment-7d9599d8bb-rlhzj -it --tty -- /bin/sh 
+/ # ls
+bin    dev    etc    home   lib    media  mnt    opt    proc   root   run    sbin   srv    sys    tmp    usr    var
+/ # exit
+
+helm-test on  main [!] took 5s 
+❯ kubectl -n test-namespace  exec argocd-test-deployment-7d9599d8bb-nncmw -it --tty -- /bin/sh
+/ # ls
+bin    dev    etc    home   lib    media  mnt    opt    proc   root   run    sbin   srv    sys    tmp    usr    var
+/ # exit
+```
